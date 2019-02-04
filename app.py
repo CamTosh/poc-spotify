@@ -38,26 +38,27 @@ class Spotify(object):
         button.click()
         
         time.sleep(2)
-        self.play()
 
     def logout(self):
         self.browser.quit()
     
-    def play(self):
+    def play(self, wait):
         header = self.browser.find_elements_by_css_selector('div.TrackListHeader__button')[0]
         play = header.find_elements_by_css_selector('button.btn-green')
         play[0].click()
 
-        time.sleep(15)
         self.browser.save_screenshot('debug.png')
+        time.sleep(wait)
+        self.browser.quit()
     
 if __name__ == "__main__":
     config = json.loads(open('config.json', 'r').read())
     print('Playlist: ' + config['playlist'])
     
-    for account in config['accounts']:
-        print('Load: ' + account['username'])
-        spotify = Spotify(config['playlist'])
+    while True:
+        for account in config['accounts']:
+            print('Load: ' + account['username'])
+            spotify = Spotify(config['playlist'])
 
-        spotify.login(account['username'], account['password'])
-        spotify.play()
+            spotify.login(account['username'], account['password'])
+            spotify.play(config['wait'])
